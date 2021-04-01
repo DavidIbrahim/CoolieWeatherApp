@@ -27,7 +27,7 @@ fun Fragment.registerForLocationResult(onLocationResult: (Boolean) -> Unit) {
     }
 }
 
-fun requestLocationAndCamera() {
+fun requestLocation() {
 
     Timber.d("permission launcher is null ${permissionLauncher == null}")
     permissionLauncher?.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -41,6 +41,3 @@ fun Context.hasLocationPermissions(): Boolean {
     return hasPermissions(permissions)
 }
 
-fun Context.hasPermissions(permissions: Array<String>): Boolean = permissions.all {
-    ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
-}

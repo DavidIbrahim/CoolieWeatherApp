@@ -7,8 +7,10 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.example.coolieweather.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.io.File
@@ -17,38 +19,32 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class ImageTaker @Inject constructor(@ApplicationContext appContext:Context){
-
-
-
-
-}
-
 private var permissionLauncher: ActivityResultLauncher<String>? = null
 
-private fun Activity.dispatchTakePictureIntent(requestCode:Int,photoFile: File) {
-    Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-        // Ensure that there's a camera activity to handle the intent
-        takePictureIntent.resolveActivity(packageManager)?.also {
-            // Create the File where the photo should go
+private val permissions = arrayOf(
+    android.Manifest.permission.CAMERA,
+)
 
-            // Continue only if the File was successfully created
-            photoFile.also {
-                val photoURI: Uri = FileProvider.getUriForFile(
-                    this,
-                    "com.example.android.fileprovider",
-                    it
-                )
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, requestCode)
-            }
-        }
+fun requestCamera() {
+
+    Timber.d("permission launcher is null ${permissionLauncher == null}")
+    permissionLauncher?.launch(android.Manifest.permission.CAMERA)
+
+}
+fun Fragment.registerForCameraResult(onCameraResult: (Boolean) -> Unit) {
+    Timber.d("registering for location permission")
+    permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        onCameraResult(it)
     }
 }
+fun Context.hasCameraPermissions(): Boolean {
+    return hasPermissions(permissions)
+}
+
 
 
 @Throws(IOException::class)
-private fun Activity.createImageFile(): File {
+ fun Activity.createImageFile(): File {
     // Create an image file name
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
@@ -57,10 +53,4 @@ private fun Activity.createImageFile(): File {
         ".jpg", /* suffix */
         storageDir /* directory */
     )
-}
-fun Fragment.requestCamera() {
-
-    Timber.d("permission launcher is null ${permissionLauncher == null}")
-    permissionLauncher?.launch(android.Manifest.permission.CAMERA)
-
 }

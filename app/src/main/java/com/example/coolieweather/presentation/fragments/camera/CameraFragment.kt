@@ -1,8 +1,7 @@
 package com.example.coolieweather.presentation.fragments.camera
 
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.view.FocusFinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -17,12 +17,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
+import com.example.coolieweather.presentation.utils.createImageFile
+import com.example.coolieweather.presentation.utils.hasCameraPermissions
+import com.example.coolieweather.presentation.utils.registerForCameraResult
+import com.example.coolieweather.presentation.utils.requestCamera
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.camera_fragment.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -30,7 +35,6 @@ import java.util.concurrent.Executors
 class CameraFragment : Fragment() {
     private var imageCapture: ImageCapture? = null
 
-    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
     private val viewModel: CameraViewModel by viewModels()
@@ -50,22 +54,64 @@ class CameraFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         // Request camera permissions
-        if (allPermissionsGranted()) {
+        if (requireActivity().hasCameraPermissions()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
+            registerForCameraResult { granted: Boolean ->
+                if (granted) startCamera()
+                else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.camera_permission_not_granted),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    lifecycleScope.launch {
+                        delay(1000)
+                        findNavController().navigateUp()
+
+                    }
+                }
+            }
+requestCamera()
         }
+
 
         // Set up the listener for take photo button
 
-        outputDirectory = getOutputDirectory()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    private fun takePhoto() {}
+    private fun takePhoto() {
+        // Get a stable reference of the modifiable image capture use case
+        val imageCapture = imageCapture ?: return
+        // Create time-stamped output file to hold the image
+        val photoFile = requireActivity().createImageFile()
+        // Create output options object which contains file + metadata
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        // Set up image capture listener, which is triggered after photo has
+        // been taken
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    Timber.e("Photo capture failed: ${exc.message}")
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = Uri.fromFile(photoFile)
+                    val msg = "Photo capture succeeded: $savedUri"
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.image_captured_successfully),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Timber.d(msg)
+                }
+            })
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -80,7 +126,9 @@ class CameraFragment : Fragment() {
                 .also {
                     it.setSurfaceProvider(viewFinder.surfaceProvider)
                 }
-
+            imageCapture = ImageCapture.Builder()
+                .setTargetRotation(viewFinder.display.rotation)
+                .build()
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -90,46 +138,16 @@ class CameraFragment : Fragment() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview)
+                    this, cameraSelector, preview, imageCapture
+                )
 
-            } catch(exc: Exception) {
-                Timber.e( exc)
+            } catch (exc: Exception) {
+                Timber.e(exc)
             }
 
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all { it ->
-        ContextCompat.checkSelfPermission(
-            requireContext(), it
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun getOutputDirectory(): File {
-        val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else requireContext().filesDir
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray
-    ) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Camera Permission not granted",
-                    Toast.LENGTH_SHORT
-                ).show()
-                findNavController().navigateUp()
-            }
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -137,7 +155,6 @@ class CameraFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "CameraXBasic"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)

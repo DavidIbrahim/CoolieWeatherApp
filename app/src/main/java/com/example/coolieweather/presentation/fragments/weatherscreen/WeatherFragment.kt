@@ -17,7 +17,7 @@ import com.example.coolieweather.presentation.CoolieWeatherTheme
 import com.example.coolieweather.presentation.utils.hasLocationPermissions
 import com.example.coolieweather.presentation.utils.isLocationEnabled
 import com.example.coolieweather.presentation.utils.registerForLocationResult
-import com.example.coolieweather.presentation.utils.requestLocationAndCamera
+import com.example.coolieweather.presentation.utils.requestLocation
 import com.google.android.gms.location.*
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -54,14 +54,10 @@ class WeatherFragment : Fragment() {
     }
     private fun handleRequestingLocation() {
         if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Toast.makeText(
-                requireContext(),
-                "Accessing your location will help us show your city and local time to your partners",
-                Toast.LENGTH_LONG
-            ).show()
+          //todo explain to the user why we need location permission
         }
         Timber.d("requesting location")
-        requestLocationAndCamera()
+        requestLocation()
 
     }
     private fun goToCameraFragment(){
