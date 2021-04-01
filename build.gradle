@@ -1,0 +1,30 @@
+import dependencies.Build
+
+buildscript {
+
+    repositories {
+        google()
+        mavenCentral()
+
+    }
+    dependencies {
+        classpath Build.kotlin_gradle_plugin
+        classpath Build.nav_safe_args_plugin
+        classpath Build.dagger_hilt_plugin
+        classpath Build.build_tools
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30'
+    }
+}
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+
+
+
+    }
+}
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
