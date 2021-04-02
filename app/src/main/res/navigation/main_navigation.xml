@@ -3,28 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/weatherFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/weatherFragment"
         android:name="com.example.coolieweather.presentation.fragments.weatherscreen.WeatherFragment"
-        android:label="fragment_weather"
-         >
+        android:label="fragment_weather">
         <action
             android:id="@+id/action_weatherFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
 
-            app:destination="@id/cameraFragment" />
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_weatherFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:destination="@id/galleryFragment" />
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
@@ -36,4 +35,18 @@
         android:name="com.example.coolieweather.presentation.fragments.gallery.GalleryFragment"
         android:label="gallery_fragment"
         tools:layout="@layout/gallery_fragment" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.coolieweather.presentation.fragments.splash.SplashFragment"
+        android:label="SplashFragment">
+        <action
+            android:id="@+id/action_splashFragment_to_weatherFragment"
+            app:destination="@id/weatherFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

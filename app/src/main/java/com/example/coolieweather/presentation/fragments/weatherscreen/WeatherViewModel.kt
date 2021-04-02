@@ -6,13 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coolieweather.buisness.ImagesDataCacheService
-import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.WeatherService
 import com.example.coolieweather.buisness.models.GeoPoint
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,23 +25,37 @@ class WeatherViewModel @Inject constructor(
     ViewModel() {
 
     val grantedLocationPermission: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _currentBackgroundImageUri: MutableLiveData<Uri> = MutableLiveData(null)
-     val currentBackgroundImageUri: LiveData<Uri> = _currentBackgroundImageUri
 
-    var currentWeatherImageUri: Uri?= null
+
+    private val _currentBackgroundImageUri: MutableLiveData<Uri> = MutableLiveData(null)
+    val currentBackgroundImageUri: LiveData<Uri> = _currentBackgroundImageUri
+
+    //this is the background with weather data on it
+    var currentWeatherImageUri: Uri? = null
 
     private val _weatherData: MutableLiveData<Result<WeatherData>> = MutableLiveData(null)
     val weatherData: MutableLiveData<Result<WeatherData>> = _weatherData
 
+
+    private val _currentLocation: MutableLiveData<GeoPoint> = MutableLiveData(null)
+    val currentLocation: MutableLiveData<GeoPoint> = _currentLocation
+
     fun updateWeatherDetails(geoPoint: GeoPoint) {
-        viewModelScope.launch {
-            val weatherResult =
-                weatherService.getWeatherDetailsForCoordinates(geoPoint)
-            _weatherData.postValue(weatherResult)
-        }
+        _currentLocation.postValue(geoPoint)
+        fetchWeatherData()
 
     }
-    fun saveWeatherImageInDatabase(uri: Uri){
+
+     fun fetchWeatherData() {
+        viewModelScope.launch {
+            delay(100)
+            val weatherResult =
+                currentLocation.value?.let { weatherService.getWeatherDetailsForCoordinates(it) }
+            _weatherData.postValue(weatherResult)
+        }
+    }
+
+    fun saveWeatherImageInDatabase(uri: Uri) {
         currentWeatherImageUri = uri
         viewModelScope.launch {
             imagesDataCacheService.saveImage(uri)

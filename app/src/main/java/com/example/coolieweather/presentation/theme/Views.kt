@@ -25,6 +25,7 @@ import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.coolieweather.R
 import com.example.coolieweather.R.font
 import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
@@ -66,17 +67,13 @@ fun WeatherImage(
 
         when (imageState) {
             //todo change error view
-            is Error -> LoadingImage(Modifier.matchParentSize())
-            Loading -> LoadingImage(Modifier.matchParentSize())
+            Loading -> LoadingImage(Modifier.matchParentSize(),true)
             is Success -> {
                 val displayedImage = imageState.data.let {
-                    Timber.d(System.currentTimeMillis().toString())
                     val weatherImage =
                         writeWeatherDataOnImage(it, weatherData, LocalContext.current)
-                    Timber.d(System.currentTimeMillis().toString())
                     val uri = LocalContext.current.writeBitmapToFile(weatherImage)
                     saveImageInDatabase(uri)
-                    Timber.d(System.currentTimeMillis().toString())
                     weatherImage
 
                 }
@@ -191,12 +188,16 @@ fun convertToPixels(context: Context, nDP: Int): Int {
 }
 
 @Composable
-fun LoadingImage(modifier: Modifier = Modifier) {
-    Box(modifier) {
-        CircularProgressIndicator(
-            Modifier
-                .align(Alignment.Center)
-        )
+fun LoadingImage(modifier: Modifier = Modifier,animated:Boolean = false) {
+    if(animated){
+        LAnimation(rawResourceID = R.raw.loading_animation,modifier, Int.MAX_VALUE)
+    } else {
+        Box(modifier) {
+            CircularProgressIndicator(
+                modifier
+                    .align(Alignment.Center)
+            )
+        }
     }
 
 }

@@ -10,9 +10,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_moonsun"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_moonsun"
         android:supportsRtl="true"
         android:name=".presentation.common.CoolieWeatherApplication"
         android:theme="@style/Theme.CoolieWeather">

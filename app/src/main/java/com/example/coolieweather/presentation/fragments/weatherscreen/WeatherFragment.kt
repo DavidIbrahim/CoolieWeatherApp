@@ -47,7 +47,7 @@ class WeatherFragment : Fragment() {
 
         viewModel.grantedLocationPermission.observe(this) {
             if (it) {
-                createLocationRequest()
+                getLocation()
 
             }
         }
@@ -73,43 +73,44 @@ class WeatherFragment : Fragment() {
     }
 
 
-    private fun showPleaseEnableLocationToast() {
-        Toast.makeText(
-            requireContext(),
-            getString(R.string.please_enable_location_from_settings),
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+
 
     @SuppressLint("MissingPermission")
-    private fun createLocationRequest() {
+    private fun getLocation() {
         val locationEnabled = requireContext().isLocationEnabled()
 
 
-        Timber.d("creating location request")
+        Timber.d("getting location")
+        //if location is already enabled location request won't return results till
+        // it's toggled off and on again on some devices so used last location in this case
         if (locationEnabled)
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 Timber.d("location is $location")
                 if (location != null)
                     viewModel.updateWeatherDetails(GeoPoint(location.latitude, location.longitude))
-
-
+                else createLocationRequest()
             }
         else {
-            showPleaseEnableLocationToast()
+            createLocationRequest()
+        }
+    }
+    @SuppressLint("MissingPermission")
+    private fun createLocationRequest() {
+        Timber.d("creating location request")
 
-            val locationRequest = LocationRequest.create();
-            locationRequest.interval = 1000;
-            locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-            val locationCallback = object : LocationCallback() {
-                override fun onLocationResult(p0: LocationResult?) {
-                    super.onLocationResult(p0)
+        val locationRequest = LocationRequest.create();
+        locationRequest.interval = 10;
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult?) {
+                super.onLocationResult(p0)
 
-                    Timber.d("location result called with $p0")
+                Timber.d("location result called with $p0")
 
-                    if (p0 != null) {
-                        val location: Location = p0.lastLocation
-                        Timber.d("location is $location")
+                if (p0 != null) {
+                    val location: Location = p0.lastLocation
+                    Timber.d("location is $location")
+                    if(location !=null) {
                         viewModel.updateWeatherDetails(
                             GeoPoint(
                                 location.latitude,
@@ -118,13 +119,13 @@ class WeatherFragment : Fragment() {
                         )
                         fusedLocationClient.removeLocationUpdates(this)
                     }
-
                 }
+
             }
-            fusedLocationClient.requestLocationUpdates(
-                locationRequest, locationCallback, Looper.getMainLooper()
-            )
         }
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest, locationCallback, Looper.getMainLooper()
+        )
     }
 
     private fun gotoGalleryFragment() {
@@ -156,14 +157,17 @@ class WeatherFragment : Fragment() {
                 CoolieWeatherTheme {
                     val currentBackGround by viewModel.currentBackgroundImageUri.observeAsState()
                     val weatherData: Result<WeatherData>? by viewModel.weatherData.observeAsState()
-
+                    val currentLocation: GeoPoint? by viewModel.currentLocation.observeAsState()
+                    val stillSearchingForLocation = currentLocation == null
                     WeatherScreen(
                         currentBackground = currentBackGround,
+                        stillSearchingForLocation = stillSearchingForLocation,
                         weatherData = weatherData,
                         goToCamera = { this@WeatherFragment.goToCameraFragment() },
                         goToGallery = { this@WeatherFragment.gotoGalleryFragment() },
                         saveImageInDatabase = viewModel::saveWeatherImageInDatabase,
-                        shareImage = { shareImage() }
+                        shareImage = { shareImage() },
+                        reloadWeatherData = viewModel::fetchWeatherData
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.coolieweather.presentation.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -24,6 +25,7 @@ fun Context.writeBitmapToFile(bitmap: Bitmap): Uri {
 
 }
 
+@SuppressLint("SimpleDateFormat")
 @Throws(IOException::class)
 fun Context.createImageFile(): File {
     // Create an image file name

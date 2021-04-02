@@ -7,8 +7,11 @@
     <string name="camera_permission_not_granted">Camera Permission not granted</string>
     <string name="add_image">Start by capturing your special image ;)</string>
     <string name="please_enable_location_from_settings">Please Enable location from settings</string>
+    <string name="searching_location_msg">Please Enable location from settings to get you a precise weather data</string>
     <string name="open_camera">Open Camera</string>
     <string name="open_saved_images">Open Images</string>
     <string name="my_images">My Images</string>
     <string name="add_image_first_to_share">Add image first to share</string>
+    <string name="coolie_weather">Coolie Weather</string>
+    <string name="reload">Reload</string>
 </resources>
