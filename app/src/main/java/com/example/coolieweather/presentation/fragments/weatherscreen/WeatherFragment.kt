@@ -17,14 +17,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
-import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.GeoPoint
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.CoolieWeatherTheme
-import com.example.coolieweather.presentation.utils.hasLocationPermissions
-import com.example.coolieweather.presentation.utils.isLocationEnabled
-import com.example.coolieweather.presentation.utils.registerForLocationResult
-import com.example.coolieweather.presentation.utils.requestLocation
+import com.example.coolieweather.presentation.utils.*
 import com.google.android.gms.location.*
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -77,7 +74,7 @@ class WeatherFragment : Fragment() {
 
 
     private fun showPleaseEnableLocationToast() {
-         Toast.makeText(
+        Toast.makeText(
             requireContext(),
             getString(R.string.please_enable_location_from_settings),
             Toast.LENGTH_SHORT
@@ -130,10 +127,22 @@ class WeatherFragment : Fragment() {
         }
     }
 
-    fun gotoGalleryFragment(){
+    private fun gotoGalleryFragment() {
         findNavController().navigate(WeatherFragmentDirections.actionWeatherFragmentToGalleryFragment())
     }
 
+    fun shareImage() {
+        viewModel.currentWeatherImageUri.let {
+            if (it == null) Toast.makeText(
+                requireContext(),
+                getString(R.string.add_image_first_to_share),
+                Toast.LENGTH_SHORT
+            ).show()
+            else
+                requireContext().shareFile(it)
+
+        }
+    }
 
 
     @OptIn(ExperimentalMaterialApi::class)
@@ -152,8 +161,9 @@ class WeatherFragment : Fragment() {
                         currentBackground = currentBackGround,
                         weatherData = weatherData,
                         goToCamera = { this@WeatherFragment.goToCameraFragment() },
-                        goToGallery = {this@WeatherFragment.gotoGalleryFragment()},
-                        saveImageInDatabase = viewModel::saveWeatherImageInDatabase
+                        goToGallery = { this@WeatherFragment.gotoGalleryFragment() },
+                        saveImageInDatabase = viewModel::saveWeatherImageInDatabase,
+                        shareImage = { shareImage() }
                     )
                 }
             }

@@ -70,11 +70,15 @@ fun WeatherImage(
             Loading -> LoadingImage(Modifier.matchParentSize())
             is Success -> {
                 val displayedImage = imageState.data.let {
+                    Timber.d(System.currentTimeMillis().toString())
                     val weatherImage =
                         writeWeatherDataOnImage(it, weatherData, LocalContext.current)
+                    Timber.d(System.currentTimeMillis().toString())
                     val uri = LocalContext.current.writeBitmapToFile(weatherImage)
                     saveImageInDatabase(uri)
+                    Timber.d(System.currentTimeMillis().toString())
                     weatherImage
+
                 }
                 androidx.compose.foundation.Image(
                     bitmap = displayedImage.asImageBitmap(),

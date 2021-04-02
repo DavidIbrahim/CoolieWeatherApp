@@ -27,14 +27,12 @@ class WeatherViewModel @Inject constructor(
     val grantedLocationPermission: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _currentBackgroundImageUri: MutableLiveData<Uri> = MutableLiveData(null)
      val currentBackgroundImageUri: LiveData<Uri> = _currentBackgroundImageUri
+
+    var currentWeatherImageUri: Uri?= null
+
     private val _weatherData: MutableLiveData<Result<WeatherData>> = MutableLiveData(null)
     val weatherData: MutableLiveData<Result<WeatherData>> = _weatherData
-    init {
-        runBlocking {
-            val lastImage = imagesDataCacheService.getLastImage()
-            setCurrentBackground(lastImage)
-        }
-    }
+
     fun updateWeatherDetails(geoPoint: GeoPoint) {
         viewModelScope.launch {
             val weatherResult =
@@ -44,6 +42,7 @@ class WeatherViewModel @Inject constructor(
 
     }
     fun saveWeatherImageInDatabase(uri: Uri){
+        currentWeatherImageUri = uri
         viewModelScope.launch {
             imagesDataCacheService.saveImage(uri)
         }

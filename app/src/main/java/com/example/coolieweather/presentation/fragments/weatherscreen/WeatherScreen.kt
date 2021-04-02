@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,11 +35,10 @@ fun WeatherScreen(
     weatherData: Result<WeatherData>?,
     goToCamera: () -> Unit,
     goToGallery: () -> Unit,
-    saveImageInDatabase:(Uri)->Unit
+    saveImageInDatabase: (Uri) -> Unit,
+    shareImage: () -> Unit
 ) {
 
-    val scope = rememberCoroutineScope()
-    val selection = remember { mutableStateOf(1) }
     val scaffoldState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
@@ -56,6 +56,7 @@ fun WeatherScreen(
                 ) {
                     BottomSheetOptionRow(R.drawable.gallery,stringResource(id = R.string.open_saved_images),goToGallery)
                     Divider()
+                    BottomSheetOptionRow(R.drawable.ic_share,stringResource(id = R.string.open_saved_images),shareImage)
 
                 }
 
@@ -108,7 +109,7 @@ private fun WeatherContent(
         when {
             currentBackground == null -> NoBackgroundScreen(Modifier.align(Alignment.Center))
             weatherData == null -> {
-                LoadingImage(Modifier.size(100.dp))
+                LoadingImage(Modifier.size(100.dp).align(Alignment.Center))
 
             }
             weatherData is Result.Success -> {
@@ -123,28 +124,6 @@ private fun WeatherContent(
                 ErrorFetchingWeatherDataView()
             }
         }
-
-
-        /* IconButton(
-             onClick = goToCamera,
-             Modifier
-                 .padding(16.dp)
-
-                 .background(
-                     MaterialTheme.colors.secondary,
-                     CircleShape
-                 )
-                 .align(
-                     Alignment.BottomEnd
-                 )
-         ) {
-             Icon(
-                 painter = painterResource(R.drawable.ic_baseline_camera_alt_24),
-                 contentDescription = "Open Camera",
-                 tint = Color.White
-             )
-
-         }*/
     }
 }
 
@@ -156,7 +135,7 @@ fun ErrorFetchingWeatherDataView() {
 @Composable
 fun NoBackgroundScreen(modifier: Modifier) {
     Column(
-        Modifier
+        modifier
             .fillMaxSize()
             .padding(65.dp),
         verticalArrangement = Arrangement.Center,

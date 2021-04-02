@@ -9,10 +9,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
@@ -33,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.request.RequestOptions
 import com.example.coolieweather.R
 import com.example.coolieweather.presentation.CoolieWeatherTheme
 import com.example.coolieweather.presentation.theme.LoadingImage
@@ -90,7 +88,7 @@ private fun GalleryScreen(viewModel: GalleryViewModel, onBackPressed: () -> Unit
         }
     }) {
 
-        GalleryScreenContent(images,selectedImage){
+        GalleryScreenContent(images, selectedImage) {
             selectedImage = it
         }
     }
@@ -113,7 +111,7 @@ private fun GalleryScreenContent(
 
         selectedImage.let {
             if (it == null)
-                images?.let { PhotoGrid(it,onImageClick) }
+                images?.let { PhotoGrid(it, onImageClick) }
             else {
                 PreviewImage(it)
 
@@ -136,11 +134,11 @@ private fun PreviewImage(it: Uri) {
         ) + fadeIn(initialAlpha = 0.3f),
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
-    GlideImage(
-        data = it.path.toString(),
-        contentDescription = "",
-        Modifier.fillMaxSize()
-    )
+        GlideImage(
+            data = it.path.toString(),
+            contentDescription = "",
+            Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -148,10 +146,10 @@ private fun PreviewImage(it: Uri) {
 @Composable
 fun PhotoGrid(imagesUri: List<Uri>, onImageClick: (Uri) -> Unit) {
     LazyVerticalGrid(
-        cells = GridCells.Adaptive(minSize = 100.dp), contentPadding = PaddingValues(1.dp)
+        cells = GridCells.Adaptive(minSize = 70.dp), contentPadding = PaddingValues(1.dp)
     ) {
         items(imagesUri) { imageUri ->
-            PhotoItem(imageUri,onImageClick)
+            PhotoItem(imageUri, onImageClick)
         }
     }
 }
@@ -159,8 +157,15 @@ fun PhotoGrid(imagesUri: List<Uri>, onImageClick: (Uri) -> Unit) {
 @Composable
 fun PhotoItem(uri: Uri, onImageClick: (Uri) -> Unit) {
     GlideImage(data = uri.path.toString(), contentDescription = "", modifier = Modifier
-        .fillMaxSize().clickable { onImageClick(uri) }
-        .padding(1.dp),
+        .clickable { onImageClick(uri) }
+        .padding(1.dp).fillMaxWidth(),
+        requestBuilder = {
+            val options = RequestOptions()
+            options.fitCenter()
+            //load only a thumbnail
+            options.override(350)
+            apply(options)
+        },
         loading = { LoadingImage(Modifier.fillMaxSize()) }
     )
 }

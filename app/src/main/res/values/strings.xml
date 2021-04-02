@@ -10,4 +10,5 @@
     <string name="open_camera">Open Camera</string>
     <string name="open_saved_images">Open Images</string>
     <string name="my_images">My Images</string>
+    <string name="add_image_first_to_share">Add image first to share</string>
 </resources>

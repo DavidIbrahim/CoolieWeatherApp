@@ -2,12 +2,11 @@ package com.example.coolieweather.presentation.fragments.camera
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.Surface.ROTATION_0
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
 import com.example.coolieweather.presentation.fragments.weatherscreen.WeatherViewModel
@@ -26,7 +24,6 @@ import com.example.coolieweather.presentation.utils.hasCameraPermissions
 import com.example.coolieweather.presentation.utils.registerForCameraResult
 import com.example.coolieweather.presentation.utils.requestCamera
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -49,7 +46,7 @@ class CameraFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.camera_fragment, container, false)
-        view.findViewById<Button>(R.id.camera_capture_button).setOnClickListener { takePhoto() }
+        view.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener { takePhoto() }
         viewFinder = view.findViewById(R.id.viewFinder)
         return view
     }
