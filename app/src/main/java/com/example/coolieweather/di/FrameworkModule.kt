@@ -1,10 +1,13 @@
 package com.example.coolieweather.di
 
 import android.content.Context
+import androidx.room.Room
 import com.example.coolieweather.R
 import com.kwabenaberko.openweathermaplib.constant.Languages
 import com.kwabenaberko.openweathermaplib.constant.Units
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
+import com.linguistic.linguistic.framework.datasource.cache.database.ImagesDataBase
+import com.linguistic.linguistic.framework.datasource.cache.database.ImagesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +30,21 @@ object FrameworkModule {
         helper.setUnits(Units.METRIC)
         return helper
     }
+
+
+    @Singleton
+    @Provides
+    fun provideIMagesDataBase(
+        @ApplicationContext app: Context
+    ): ImagesDataBase {
+        return Room.databaseBuilder(app, ImagesDataBase::class.java, "offline_messages")
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideTextMessagesDao(db: ImagesDataBase): ImagesDao {
+        return db.textMessagesDao();
+    }
+
 }

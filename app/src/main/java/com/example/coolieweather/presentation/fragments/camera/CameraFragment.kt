@@ -3,6 +3,7 @@ package com.example.coolieweather.presentation.fragments.camera
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Surface.ROTATION_0
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -13,11 +14,11 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
 import com.example.coolieweather.presentation.utils.createImageFile
@@ -25,9 +26,11 @@ import com.example.coolieweather.presentation.utils.hasCameraPermissions
 import com.example.coolieweather.presentation.utils.registerForCameraResult
 import com.example.coolieweather.presentation.utils.requestCamera
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -72,7 +75,7 @@ class CameraFragment : Fragment() {
                     }
                 }
             }
-requestCamera()
+            requestCamera()
         }
 
 
@@ -86,7 +89,7 @@ requestCamera()
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
         // Create time-stamped output file to hold the image
-        val photoFile = requireActivity().createImageFile()
+        val photoFile: File = requireActivity().createImageFile()
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
@@ -109,6 +112,10 @@ requestCamera()
                         Toast.LENGTH_SHORT
                     ).show()
                     Timber.d(msg)
+                    lifecycleScope.launch() {
+                        viewModel.saveImageInDatabase(savedUri)
+
+                    }
                 }
             })
     }
@@ -127,7 +134,7 @@ requestCamera()
                     it.setSurfaceProvider(viewFinder.surfaceProvider)
                 }
             imageCapture = ImageCapture.Builder()
-                .setTargetRotation(viewFinder.display.rotation)
+                .setTargetRotation(ROTATION_0)
                 .build()
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA

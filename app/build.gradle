@@ -108,5 +108,11 @@ dependencies {
 // CameraX Lifecycle Library
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
 // CameraX View class
+
     implementation "androidx.camera:camera-view:1.0.0-alpha23"
+
+    implementation RoomDependencies.room_ktx
+    implementation RoomDependencies.room_runtime
+    kapt RoomDependencies.room_compiler
+    implementation RoomDependencies.ROOM_TEST
 }
