@@ -6,24 +6,20 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.coolieweather.presentation.theme.gray100
+import com.example.coolieweather.presentation.theme.gray400
+import com.example.coolieweather.presentation.theme.orange100
+import com.example.coolieweather.presentation.theme.orange400
 
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
-)
 
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-
-    background = Color.White,
-    surface = Color.White,
+private val LightColors = lightColors(
+    primary = orange100,
+    primaryVariant = orange400,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
+    secondary = orange400,
+    surface = Color.White, background = gray100,
+    onSurface = gray400,
+    onSecondary = Color.White
 )
 
 @Composable
@@ -32,9 +28,10 @@ fun CoolieWeatherTheme(
     content: @Composable() () -> Unit
 ) {
     val colors = if (darkTheme) {
-        DarkColorPalette
+        //todo change this to dark colors when designed
+        LightColors
     } else {
-        LightColorPalette
+        LightColors
     }
 
     MaterialTheme(

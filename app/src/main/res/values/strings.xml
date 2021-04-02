@@ -5,4 +5,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image_captured_successfully">Image captured successfully</string>
     <string name="camera_permission_not_granted">Camera Permission not granted</string>
+    <string name="add_image">Start by capturing your special image ;)</string>
+    <string name="please_enable_location_from_settings">Please Enable location from settings</string>
 </resources>

@@ -2,25 +2,25 @@ package com.example.coolieweather.presentation.fragments.camera
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.Surface.ROTATION_0
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
+import com.example.coolieweather.presentation.fragments.weatherscreen.WeatherViewModel
 import com.example.coolieweather.presentation.utils.createImageFile
 import com.example.coolieweather.presentation.utils.hasCameraPermissions
 import com.example.coolieweather.presentation.utils.registerForCameraResult
@@ -41,6 +41,7 @@ class CameraFragment : Fragment() {
     private lateinit var cameraExecutor: ExecutorService
 
     private val viewModel: CameraViewModel by viewModels()
+    private val weatherViewModel: WeatherViewModel by activityViewModels()
 
     private lateinit var viewFinder: PreviewView
     override fun onCreateView(
@@ -114,6 +115,9 @@ class CameraFragment : Fragment() {
                     Timber.d(msg)
                     lifecycleScope.launch() {
                         viewModel.saveImageInDatabase(savedUri)
+                        weatherViewModel.setCurrentBackground(savedUri)
+                        delay(1000)
+                        findNavController().navigateUp()
 
                     }
                 }
@@ -128,13 +132,13 @@ class CameraFragment : Fragment() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Preview
-            val preview = Preview.Builder()
+            val preview = Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .build()
                 .also {
                     it.setSurfaceProvider(viewFinder.surfaceProvider)
                 }
             imageCapture = ImageCapture.Builder()
-                .setTargetRotation(ROTATION_0)
+                .setTargetRotation(ROTATION_0).setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .build()
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA

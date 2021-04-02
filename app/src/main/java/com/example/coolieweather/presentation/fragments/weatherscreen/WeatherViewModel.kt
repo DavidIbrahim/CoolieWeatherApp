@@ -1,26 +1,34 @@
 package com.example.coolieweather.presentation.fragments.weatherscreen
 
-import com.example.coolieweather.buisness.models.WeatherData
 import android.location.Location
+import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.coolieweather.buisness.ImagesDataCacheService
 import com.example.coolieweather.buisness.Result
 import com.example.coolieweather.buisness.WeatherService
 import com.example.coolieweather.buisness.models.GeoPoint
+import com.example.coolieweather.buisness.models.WeatherData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 
-class WeatherViewModel @Inject constructor(private val weatherService: WeatherService) :
+class WeatherViewModel @Inject constructor(
+    private val weatherService: WeatherService,
+    private val imagesDataCacheService: ImagesDataCacheService
+) :
     ViewModel() {
-    val grantedLocationPermission: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val grantedLocationPermission: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _currentBackgroundImageUri: MutableLiveData<Uri> = MutableLiveData(null)
+     val currentBackgroundImageUri: LiveData<Uri> = _currentBackgroundImageUri
     private val _weatherData: MutableLiveData<Result<WeatherData>> = MutableLiveData(null)
-    val weatherData = _weatherData
-    fun getWeatherDetails(geoPoint: GeoPoint) {
+    val weatherData: MutableLiveData<Result<WeatherData>> = _weatherData
+    fun updateWeatherDetails(geoPoint: GeoPoint) {
         viewModelScope.launch {
             val weatherResult =
                 weatherService.getWeatherDetailsForCoordinates(geoPoint)
@@ -29,10 +37,9 @@ class WeatherViewModel @Inject constructor(private val weatherService: WeatherSe
 
     }
 
-
-    fun setUserLocation(location: Location?) {
-        if (location != null) {
-
-        }
+    fun setCurrentBackground(uri: Uri) {
+        _currentBackgroundImageUri.postValue(uri)
     }
+
+
 }
