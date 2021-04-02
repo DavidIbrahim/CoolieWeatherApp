@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.GeoPoint
 import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.CoolieWeatherTheme
@@ -152,7 +152,8 @@ class WeatherFragment : Fragment() {
                         currentBackground = currentBackGround,
                         weatherData = weatherData,
                         goToCamera = { this@WeatherFragment.goToCameraFragment() },
-                        goToGallery = {this@WeatherFragment.gotoGalleryFragment()}
+                        goToGallery = {this@WeatherFragment.gotoGalleryFragment()},
+                        saveImageInDatabase = viewModel::saveWeatherImageInDatabase
                     )
                 }
             }

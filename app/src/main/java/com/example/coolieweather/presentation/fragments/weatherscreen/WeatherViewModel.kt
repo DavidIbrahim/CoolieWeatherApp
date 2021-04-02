@@ -1,13 +1,12 @@
 package com.example.coolieweather.presentation.fragments.weatherscreen
 
-import android.location.Location
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coolieweather.buisness.ImagesDataCacheService
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.WeatherService
 import com.example.coolieweather.buisness.models.GeoPoint
 import com.example.coolieweather.buisness.models.WeatherData
@@ -43,6 +42,11 @@ class WeatherViewModel @Inject constructor(
             _weatherData.postValue(weatherResult)
         }
 
+    }
+    fun saveWeatherImageInDatabase(uri: Uri){
+        viewModelScope.launch {
+            imagesDataCacheService.saveImage(uri)
+        }
     }
 
     fun setCurrentBackground(uri: Uri?) {

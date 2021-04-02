@@ -9,6 +9,4 @@ import javax.inject.Inject
 @HiltViewModel
 
 class CameraViewModel  @Inject constructor(private val imagesDataCacheService: ImagesDataCacheService): ViewModel() {
-suspend fun saveImageInDatabase(uri: Uri){
-    imagesDataCacheService.saveImage(uri)
-}}
+}

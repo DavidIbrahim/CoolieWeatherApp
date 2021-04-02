@@ -1,7 +1,7 @@
 package com.example.coolieweather.framework
 
 import com.example.coolieweather.buisness.models.WeatherData
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.WeatherService
 import com.example.coolieweather.buisness.models.GeoPoint
 import com.example.coolieweather.framework.utils.FrameworkToDomainTransformer

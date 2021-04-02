@@ -1,19 +1,16 @@
 package com.example.coolieweather.presentation.utils
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import android.location.LocationManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import timber.log.Timber
 import java.util.*
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.GeoPoint
 
 private val permissions = arrayOf(

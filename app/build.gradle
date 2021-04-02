@@ -86,6 +86,8 @@ dependencies {
     implementation Compose.compose_viewModel
     implementation Compose.compose_livedata
     implementation Compose.constraint_layout
+    implementation Compose.compose_animation
+
     implementation 'androidx.hilt:hilt-navigation-fragment:1.0.0-beta01'
     implementation SupportDependencies.appcompat
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha09"
@@ -118,7 +120,9 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
-    implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.palette:palette-ktx:1.0.0'
+
+    implementation Accompanist.glide
 
 
 }

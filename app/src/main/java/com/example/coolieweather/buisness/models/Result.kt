@@ -1,4 +1,4 @@
-package com.example.coolieweather.buisness
+package com.example.coolieweather.buisness.models
 
 
 sealed class Result<out R> { companion object {
@@ -8,7 +8,7 @@ sealed class Result<out R> { companion object {
 
     fun fold(
         onSuccess: (value: R) -> Unit,
-        onFailure: (error:Error) -> Unit = { }
+        onFailure: (error: Error) -> Unit = { }
     ) {
         when (this){
             is Success -> onSuccess(this.data)
@@ -17,7 +17,7 @@ sealed class Result<out R> { companion object {
     }
     suspend fun suspendFold(
         onSuccess: suspend (value: R) -> Unit,
-        onFailure: (error:Error) -> Unit = { }
+        onFailure: (error: Error) -> Unit = { }
     ) {
         when (this){
             is Success -> onSuccess(this.data)
@@ -28,7 +28,7 @@ sealed class Result<out R> { companion object {
     fun onSuccess(action: (Value:R)->Unit) {
         if(this is Success) action(this.data)
     }
-    fun onError(onFailure: (error:Error) -> Unit = { }) {
+    fun onError(onFailure: (error: Error) -> Unit = { }) {
         if(this is Error) onFailure(this)
     }
 

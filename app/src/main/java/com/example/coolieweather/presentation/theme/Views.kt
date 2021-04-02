@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.res.ResourcesCompat
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieAnimationSpec
@@ -26,7 +26,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.coolieweather.R.font
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.utils.*
 import timber.log.Timber
@@ -51,6 +51,7 @@ fun LAnimation(rawResourceID: Int, modifier: Modifier = Modifier, repeatCount: I
 fun WeatherImage(
     picURL: String,
     weatherData: WeatherData,
+    saveImageInDatabase:(Uri)->Unit,
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.FillBounds,
@@ -69,7 +70,11 @@ fun WeatherImage(
             Loading -> LoadingImage(Modifier.matchParentSize())
             is Success -> {
                 val displayedImage = imageState.data.let {
-                    writeWeatherDataOnImage(it, weatherData, LocalContext.current)
+                    val weatherImage =
+                        writeWeatherDataOnImage(it, weatherData, LocalContext.current)
+                    val uri = LocalContext.current.writeBitmapToFile(weatherImage)
+                    saveImageInDatabase(uri)
+                    weatherImage
                 }
                 androidx.compose.foundation.Image(
                     bitmap = displayedImage.asImageBitmap(),

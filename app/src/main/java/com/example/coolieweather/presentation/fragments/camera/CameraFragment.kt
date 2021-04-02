@@ -80,7 +80,6 @@ class CameraFragment : Fragment() {
         }
 
 
-        // Set up the listener for take photo button
 
 
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -107,14 +106,8 @@ class CameraFragment : Fragment() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.image_captured_successfully),
-                        Toast.LENGTH_SHORT
-                    ).show()
                     Timber.d(msg)
                     lifecycleScope.launch() {
-                        viewModel.saveImageInDatabase(savedUri)
                         weatherViewModel.setCurrentBackground(savedUri)
                         delay(1000)
                         findNavController().navigateUp()
@@ -165,11 +158,7 @@ class CameraFragment : Fragment() {
         cameraExecutor.shutdown()
     }
 
-    companion object {
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
-    }
+
 
 
 }

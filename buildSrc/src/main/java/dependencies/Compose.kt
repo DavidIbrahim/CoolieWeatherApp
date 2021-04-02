@@ -37,7 +37,7 @@ object Compose {
   //  androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.0-beta01'
 //    const val compose_compiler = "androidx.compose.compiler:compiler:1.0.0-alpha10"
 
-//    const val compose_animation = "androidx.compose.animation:animation:${version}"
+    const val compose_animation = "androidx.compose.animation:animation:${version}"
 
 //    const val compose_run_time = "androidx.compose.runtime:runtime:${version}"
 }

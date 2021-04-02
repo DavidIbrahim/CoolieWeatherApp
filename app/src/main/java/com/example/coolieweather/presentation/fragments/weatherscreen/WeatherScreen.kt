@@ -15,14 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.coolieweather.R
-import com.example.coolieweather.buisness.Result
+import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.BottomSheetShape
 import com.example.coolieweather.presentation.theme.LAnimation
@@ -35,7 +33,8 @@ fun WeatherScreen(
     currentBackground: Uri?,
     weatherData: Result<WeatherData>?,
     goToCamera: () -> Unit,
-    goToGallery: () -> Unit
+    goToGallery: () -> Unit,
+    saveImageInDatabase:(Uri)->Unit
 ) {
 
     val scope = rememberCoroutineScope()
@@ -76,7 +75,7 @@ fun WeatherScreen(
 
         ) { innerPadding ->
         Box(Modifier.padding(innerPadding)) {
-            WeatherContent(currentBackground, weatherData)
+            WeatherContent(currentBackground, weatherData,saveImageInDatabase)
         }
     }
 }
@@ -98,6 +97,7 @@ fun BottomSheetOptionRow(iconResourceID:Int,text: String,onClick: () -> Unit, ) 
 private fun WeatherContent(
     currentBackground: Uri?,
     weatherData: Result<WeatherData>?,
+    saveImageInDatabase:(Uri)->Unit
 ) {
 
     Box(
@@ -115,6 +115,7 @@ private fun WeatherContent(
                 WeatherImage(
                     picURL = currentBackground.path.toString(),
                     weatherData.data,
+                    saveImageInDatabase,
                     Modifier.fillMaxSize()
                 )
             }
