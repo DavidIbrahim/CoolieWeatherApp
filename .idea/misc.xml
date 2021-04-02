@@ -3,9 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/drawable/action_bar_background.xml" value="0.12" />
+        <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/drawable/gallery.xml" value="0.19375" />
+        <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/drawable/ic_baseline_camera_alt_24.xml" value="0.19375" />
+        <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/drawable/ic_baseline_menu_24.xml" value="0.14375" />
         <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/layout/camera_fragment.xml" value="0.22" />
         <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/layout/fragment_weather.xml" value="0.1015625" />
+        <entry key="..\:/Users/David/AndroidStudioProjects/CoolieWeather/app/src/main/res/layout/main_toolbar.xml" value="0.33" />
       </map>
     </option>
   </component>

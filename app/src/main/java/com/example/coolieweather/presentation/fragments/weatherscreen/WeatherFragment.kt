@@ -2,11 +2,14 @@ package com.example.coolieweather.presentation.fragments.weatherscreen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
@@ -47,7 +50,6 @@ class WeatherFragment : Fragment() {
 
         viewModel.grantedLocationPermission.observe(this) {
             if (it) {
-                checkLocationEnabled()
                 createLocationRequest()
 
             }
@@ -74,9 +76,8 @@ class WeatherFragment : Fragment() {
     }
 
 
-    private fun checkLocationEnabled() {
-        val locationEnabled = requireContext().isLocationEnabled()
-        if (!locationEnabled) Toast.makeText(
+    private fun showPleaseEnableLocationToast() {
+         Toast.makeText(
             requireContext(),
             getString(R.string.please_enable_location_from_settings),
             Toast.LENGTH_SHORT
@@ -85,17 +86,57 @@ class WeatherFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun createLocationRequest() {
+        val locationEnabled = requireContext().isLocationEnabled()
+
+
         Timber.d("creating location request")
+        if (locationEnabled)
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                Timber.d("location is $location")
+                if (location != null)
+                    viewModel.updateWeatherDetails(GeoPoint(location.latitude, location.longitude))
 
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            Timber.d("location is ss$location")
-            viewModel.updateWeatherDetails(GeoPoint(location.latitude, location.longitude))
 
+            }
+        else {
+            showPleaseEnableLocationToast()
 
+            val locationRequest = LocationRequest.create();
+            locationRequest.interval = 1000;
+            locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+            val locationCallback = object : LocationCallback() {
+                override fun onLocationResult(p0: LocationResult?) {
+                    super.onLocationResult(p0)
+
+                    Timber.d("location result called with $p0")
+
+                    if (p0 != null) {
+                        val location: Location = p0.lastLocation
+                        Timber.d("location is $location")
+                        viewModel.updateWeatherDetails(
+                            GeoPoint(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
+                        fusedLocationClient.removeLocationUpdates(this)
+                    }
+
+                }
+            }
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest, locationCallback, Looper.getMainLooper()
+            )
         }
-
     }
 
+    fun gotoGalleryFragment(){
+        findNavController().navigate(WeatherFragmentDirections.actionWeatherFragmentToGalleryFragment())
+    }
+
+
+
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -107,8 +148,12 @@ class WeatherFragment : Fragment() {
                     val currentBackGround by viewModel.currentBackgroundImageUri.observeAsState()
                     val weatherData: Result<WeatherData>? by viewModel.weatherData.observeAsState()
 
-                    WeatherScreen(currentBackground = currentBackGround, weatherData)
-                    { this@WeatherFragment.goToCameraFragment() }
+                    WeatherScreen(
+                        currentBackground = currentBackGround,
+                        weatherData = weatherData,
+                        goToCamera = { this@WeatherFragment.goToCameraFragment() },
+                        goToGallery = {this@WeatherFragment.gotoGalleryFragment()}
+                    )
                 }
             }
         }

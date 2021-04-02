@@ -1,26 +1,35 @@
 package com.example.coolieweather.presentation
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.coolieweather.presentation.theme.gray100
-import com.example.coolieweather.presentation.theme.gray400
-import com.example.coolieweather.presentation.theme.orange100
-import com.example.coolieweather.presentation.theme.orange400
+import androidx.compose.ui.unit.dp
+import com.example.coolieweather.presentation.theme.*
 
 
 private val LightColors = lightColors(
-    primary = orange100,
-    primaryVariant = orange400,
+    primary = green100,
+    primaryVariant = green400,
     onPrimary = Color.White,
-    secondary = orange400,
+    secondary = green400,
     surface = Color.White, background = gray100,
     onSurface = gray400,
     onSecondary = Color.White
 )
+val BottomSheetShape = RoundedCornerShape(
+    topStart = 20.dp,
+    topEnd = 20.dp,
+    bottomEnd = 0.dp,
+    bottomStart = 0.dp
+)
+
 
 @Composable
 fun CoolieWeatherTheme(

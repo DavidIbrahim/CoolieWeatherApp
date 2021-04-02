@@ -1,13 +1,15 @@
 package com.example.coolieweather.presentation.theme
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Paint.Align
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -15,25 +17,23 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.res.ResourcesCompat
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieAnimationSpec
 import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.coolieweather.presentation.utils.Error
-import com.example.coolieweather.presentation.utils.Loading
-import com.example.coolieweather.presentation.utils.Success
-import com.example.coolieweather.presentation.utils.UIState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import com.example.coolieweather.R.font
+import com.example.coolieweather.buisness.Result
 import com.example.coolieweather.buisness.models.WeatherData
-import android.graphics.Paint.Align
+import com.example.coolieweather.presentation.utils.*
 import timber.log.Timber
 
 
 @Composable
-fun LAnimation(rawResourceID: Int, modifier: Modifier = Modifier, repeatCount:Int=1) {
+fun LAnimation(rawResourceID: Int, modifier: Modifier = Modifier, repeatCount: Int = 1) {
     val animationSpec = remember { LottieAnimationSpec.RawRes(rawResourceID) }
     val animationState =
         rememberLottieAnimationState(autoPlay = true, repeatCount = repeatCount)
@@ -69,9 +69,9 @@ fun WeatherImage(
             Loading -> LoadingImage(Modifier.matchParentSize())
             is Success -> {
                 val displayedImage = imageState.data.let {
-                   writeDataOnImage(it,weatherData.weatherDescription, LocalContext.current)
+                    writeWeatherDataOnImage(it, weatherData, LocalContext.current)
                 }
-               androidx.compose.foundation.Image(
+                androidx.compose.foundation.Image(
                     bitmap = displayedImage.asImageBitmap(),
                     contentDescription = null,
                     modifier,
@@ -86,29 +86,95 @@ fun WeatherImage(
     }
 }
 
-fun writeDataOnImage(bitmap: Bitmap, text: String,context:Context): Bitmap {
-    val tf = Typeface.create("Helvetica", Typeface.DEFAULT.style)
+fun writeWeatherDataOnImage(bitmap: Bitmap, weatherData: WeatherData, context: Context): Bitmap {
+    val newBitmap = bitmap.copy(bitmap.config, true);
+    val canvas = Canvas(newBitmap)
+    val canvasHeight = canvas.height
+    val canvasWidth = canvas.width
+    val temperatureYPos = canvasHeight / 7
+    val placeNameYPos = (canvasHeight / 1.2).toInt()
+    val placeNameXPos = canvasWidth
+    val temperatureXPos = 0
+    val padding = 30
+    val temperatureTextSize = 120
+    writeDataOnImage(
+        canvas,
+        weatherData.temp.toString() + "\u2103",
+        context,
+        temperatureTextSize,
+        boldTextStyle = true,
+        temperatureXPos, temperatureYPos, padding
+    )
+    writeDataOnImage(
+        canvas,
+        weatherData.weatherDescription,
+        context,
+        40,
+        boldTextStyle = true,
+        temperatureXPos, temperatureYPos + temperatureTextSize * 2, padding
+    )
+    writeDataOnImage(
+        canvas,
+        (context.getCityName(weatherData.geoPoint) as Result.Success).data,
+        context,
+        50,
+        boldTextStyle = true,
+        placeNameXPos, placeNameYPos, -padding, Align.RIGHT
+    )
+    return newBitmap
+}
 
+fun writeDataOnImage(
+    canvas: Canvas,
+    text: String,
+    context: Context,
+    textSize: Int = 100,
+    boldTextStyle: Boolean = true,
+    xPos: Int,
+    yPos: Int,
+    padding: Int,
+    align: Paint.Align = Align.LEFT
+) {
+    Timber.d("writing data on image")
+    val textStyleResourceID = if (boldTextStyle) font.lato_bold else font.lato
+
+    val tf = ResourcesCompat.getFont(context, textStyleResourceID)
+    var bodyTextColor = Color.WHITE
+
+    /*  //todo use palette to get text color
+      Palette.from(bitmap).generate { palette: Palette? ->
+          (palette?.vibrantSwatch?.bodyTextColor ?: Color.WHITE)
+
+      }
+  */
     val paint = Paint()
     paint.style = Paint.Style.FILL
-    paint.color = Color.WHITE
+    paint.color = bodyTextColor
     paint.typeface = tf
-    paint.textAlign = Align.CENTER
-    paint.textSize = convertToPixels(context, 11).toFloat()
+    paint.textAlign = align
+    paint.textSize = convertToPixels(context, textSize).toFloat()
+    paint.isAntiAlias = true;
 
-    val textRect = Rect()
-    paint.getTextBounds(text, 0, text.length, textRect)
+/*
 
-    val canvas = Canvas(bitmap)
+    val xPos = canvas.width / 2 - 2 //-2 is for regulating the x position offset
 
-    //If the text is bigger than the canvas , reduce the font size
 
-    //If the text is bigger than the canvas , reduce the font size
-    if (textRect.width() >= canvas.width - 4) //the padding on either sides is considered as 4, so as to appropriately fit in the text
-        paint.textSize = convertToPixels(context , 7).toFloat() //Scaling needs to be used for different dpi's
-return bitmap
+    //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
+
+    //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
+    val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 3).toInt()
+*/
+
+    canvas.drawText(
+        text,
+        xPos.toFloat() + convertToPixels(context, padding),
+        yPos.toFloat() + convertToPixels(context, padding),
+        paint
+    )
 
 }
+
 
 fun convertToPixels(context: Context, nDP: Int): Int {
     val conversionScale = context.resources.displayMetrics.density
@@ -116,13 +182,16 @@ fun convertToPixels(context: Context, nDP: Int): Int {
 }
 
 @Composable
-fun LoadingImage(modifier: Modifier= Modifier) {
+fun LoadingImage(modifier: Modifier = Modifier) {
     Box(modifier) {
-        CircularProgressIndicator(Modifier
-            .align(Alignment.Center))
+        CircularProgressIndicator(
+            Modifier
+                .align(Alignment.Center)
+        )
     }
 
 }
+
 @Composable
 fun loadPicture(url: String): UIState<Bitmap> {
     var bitmapState: UIState<Bitmap> by remember { mutableStateOf(Loading) }

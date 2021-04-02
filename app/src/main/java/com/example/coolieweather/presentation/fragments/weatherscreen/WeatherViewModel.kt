@@ -13,6 +13,8 @@ import com.example.coolieweather.buisness.models.GeoPoint
 import com.example.coolieweather.buisness.models.WeatherData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,12 @@ class WeatherViewModel @Inject constructor(
      val currentBackgroundImageUri: LiveData<Uri> = _currentBackgroundImageUri
     private val _weatherData: MutableLiveData<Result<WeatherData>> = MutableLiveData(null)
     val weatherData: MutableLiveData<Result<WeatherData>> = _weatherData
+    init {
+        runBlocking {
+            val lastImage = imagesDataCacheService.getLastImage()
+            setCurrentBackground(lastImage)
+        }
+    }
     fun updateWeatherDetails(geoPoint: GeoPoint) {
         viewModelScope.launch {
             val weatherResult =
@@ -37,7 +45,8 @@ class WeatherViewModel @Inject constructor(
 
     }
 
-    fun setCurrentBackground(uri: Uri) {
+    fun setCurrentBackground(uri: Uri?) {
+        Timber.d("current  background image $uri")
         _currentBackgroundImageUri.postValue(uri)
     }
 

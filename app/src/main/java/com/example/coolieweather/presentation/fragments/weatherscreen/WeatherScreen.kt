@@ -1,17 +1,22 @@
 package com.example.coolieweather.presentation.fragments.weatherscreen
 
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -19,20 +24,85 @@ import androidx.compose.ui.unit.dp
 import com.example.coolieweather.R
 import com.example.coolieweather.buisness.Result
 import com.example.coolieweather.buisness.models.WeatherData
+import com.example.coolieweather.presentation.BottomSheetShape
 import com.example.coolieweather.presentation.theme.LAnimation
 import com.example.coolieweather.presentation.theme.LoadingImage
 import com.example.coolieweather.presentation.theme.WeatherImage
 
+@ExperimentalMaterialApi
 @Composable
 fun WeatherScreen(
     currentBackground: Uri?,
     weatherData: Result<WeatherData>?,
-    goToCamera: () -> Unit
+    goToCamera: () -> Unit,
+    goToGallery: () -> Unit
+) {
+
+    val scope = rememberCoroutineScope()
+    val selection = remember { mutableStateOf(1) }
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    BottomSheetScaffold(
+        sheetContent = {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(colors.surface, BottomSheetShape)
+                    .padding(top=65.dp),
+
+                ) {
+                Column(
+                    Modifier
+                        .fillMaxWidth(),
+                ) {
+                    BottomSheetOptionRow(R.drawable.gallery,stringResource(id = R.string.open_saved_images),goToGallery)
+                    Divider()
+
+                }
+
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = goToCamera
+            ) {
+                Icon(Icons.Default.Camera, contentDescription = "Open Camera")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        scaffoldState = scaffoldState,
+
+        sheetPeekHeight = 60.dp,
+
+        ) { innerPadding ->
+        Box(Modifier.padding(innerPadding)) {
+            WeatherContent(currentBackground, weatherData)
+        }
+    }
+}
+
+@Composable
+fun BottomSheetOptionRow(iconResourceID:Int,text: String,onClick: () -> Unit, ) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }.padding(vertical = 10.dp,horizontal = 16.dp)) {
+        Image(
+             painter = painterResource(id = iconResourceID),
+            contentDescription = "",Modifier.size(40.dp)
+        )
+        Text(text = text, Modifier.padding(start = 16.dp))
+    }
+}
+
+@Composable
+private fun WeatherContent(
+    currentBackground: Uri?,
+    weatherData: Result<WeatherData>?,
 ) {
 
     Box(
         Modifier.background(
-            MaterialTheme.colors.background
+            colors.background
         )
     ) {
         when {
@@ -54,26 +124,26 @@ fun WeatherScreen(
         }
 
 
-        IconButton(
-            onClick = goToCamera,
-            Modifier
-                .padding(16.dp)
+        /* IconButton(
+             onClick = goToCamera,
+             Modifier
+                 .padding(16.dp)
 
-                .background(
-                    MaterialTheme.colors.secondary,
-                    CircleShape
-                )
-                .align(
-                    Alignment.BottomEnd
-                )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_baseline_camera_alt_24),
-                contentDescription = "Open Camera",
-                tint = Color.White
-            )
+                 .background(
+                     MaterialTheme.colors.secondary,
+                     CircleShape
+                 )
+                 .align(
+                     Alignment.BottomEnd
+                 )
+         ) {
+             Icon(
+                 painter = painterResource(R.drawable.ic_baseline_camera_alt_24),
+                 contentDescription = "Open Camera",
+                 tint = Color.White
+             )
 
-        }
+         }*/
     }
 }
 
