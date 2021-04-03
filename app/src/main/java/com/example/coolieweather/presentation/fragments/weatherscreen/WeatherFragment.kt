@@ -99,8 +99,8 @@ class WeatherFragment : Fragment() {
         Timber.d("creating location request")
 
         val locationRequest = LocationRequest.create();
-        locationRequest.interval = 10;
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+        locationRequest.interval = 1000;
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 super.onLocationResult(p0)
