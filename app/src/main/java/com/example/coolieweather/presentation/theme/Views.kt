@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,6 +33,8 @@ import com.example.coolieweather.R.font
 import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.utils.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -72,20 +75,11 @@ fun WeatherImage(
             //todo change error view
             is Loading -> LoadingImage(Modifier.matchParentSize(), true)
             is Success -> {
-                val context = LocalContext.current
-                var displayedImage: Bitmap? = rememberSaveable(picURL) {
-                    val weatherImage: Bitmap =
-                        writeWeatherDataOnImage(imageState.data, weatherData, context)
-                    val uri = context.writeContentToShareableFile(weatherImage)
-                    saveImageInDatabase(uri)
-                    weatherImage
-                }
-                LoadingImage(Modifier.matchParentSize(), true)
-                Timber.d("creating displayed image")
-
-                Image(
-                    bitmap = displayedImage!!.asImageBitmap(),
-                    contentDescription = null,
+                SaveImageAndShow(
+                    picURL,
+                    imageState,
+                    weatherData,
+                    saveImageInDatabase,
                     modifier,
                     alignment,
                     contentScale,
@@ -96,6 +90,45 @@ fun WeatherImage(
             }
         }
     }
+}
+
+@Composable
+private fun SaveImageAndShow(
+    picURL: String,
+    imageState: Success<Bitmap>,
+    weatherData: WeatherData,
+    saveImageInDatabase: (Uri) -> Unit,
+    modifier: Modifier,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    alpha: Float,
+    colorFilter: ColorFilter?
+) {
+    val context = LocalContext.current
+    var isImageSaved by rememberSaveable(key = picURL) { mutableStateOf(false) }
+    var displayedImage: Bitmap? = rememberSaveable(key = picURL) {
+
+        val weatherImage: Bitmap =
+            writeWeatherDataOnImage(imageState.data, weatherData, context)
+
+        GlobalScope.launch {
+            val uri = context.writeContentToShareableFile(weatherImage)
+            saveImageInDatabase(uri)
+            isImageSaved = true
+        }
+        weatherImage
+    }
+    if (isImageSaved)
+        Image(
+            bitmap = displayedImage!!.asImageBitmap(),
+            contentDescription = null,
+            modifier,
+            alignment,
+            contentScale,
+            alpha,
+            colorFilter
+        )
+    else LoadingImage(Modifier.fillMaxSize(), true)
 }
 
 fun writeWeatherDataOnImage(bitmap: Bitmap, weatherData: WeatherData, context: Context): Bitmap {
