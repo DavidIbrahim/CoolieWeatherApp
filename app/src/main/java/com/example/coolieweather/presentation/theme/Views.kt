@@ -63,7 +63,6 @@ fun WeatherImage(
     contentScale: ContentScale = ContentScale.FillBounds,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
-    transform: ((Bitmap) -> Bitmap)? = null
 ) {
     Timber.d(weatherData.toString())
     Box(modifier) {
