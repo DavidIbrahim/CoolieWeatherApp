@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
@@ -25,6 +26,7 @@ import com.example.coolieweather.buisness.models.WeatherData
 import com.example.coolieweather.presentation.CoolieWeatherTheme
 import com.example.coolieweather.presentation.utils.*
 import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationRequest
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -141,7 +143,7 @@ class WeatherFragment : Fragment() {
     }
 
 
-    fun shareImage() {
+    private fun shareImage() {
         viewModel.currentWeatherImageUri.let {
             if (it == null) Toast.makeText(
                 requireContext(),
@@ -164,23 +166,33 @@ class WeatherFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 CoolieWeatherTheme {
-                    val currentBackGround by viewModel.currentBackgroundImageUri.observeAsState()
-                    val weatherData: Result<WeatherData>? by viewModel.weatherData.observeAsState()
-                    val currentLocation: GeoPoint? by viewModel.currentLocation.observeAsState()
-                    val stillSearchingForLocation = currentLocation == null
-                    WeatherScreen(
-                        currentBackground = currentBackGround,
-                        stillSearchingForLocation = stillSearchingForLocation,
-                        weatherData = weatherData,
-                        goToCamera = { this@WeatherFragment.goToCameraFragment() },
-                        goToGallery = { this@WeatherFragment.gotoGalleryFragment() },
-                        saveImageInDatabase = viewModel::saveWeatherImageInDatabase,
-                        shareImage = { shareImage() },
-                        reloadWeatherData = viewModel::fetchWeatherData
-                    )
+                    WeatherFragmentScreen()
                 }
             }
         }
+    }
+
+
+
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+     fun WeatherFragmentScreen() {
+        val currentBackGround by viewModel.currentBackgroundImageUri.observeAsState()
+        val weatherData: Result<WeatherData>? by viewModel.weatherData.observeAsState()
+        val currentLocation: GeoPoint? by viewModel.currentLocation.observeAsState()
+        val stillSearchingForLocation = currentLocation == null
+        WeatherScreen(
+            currentBackground = currentBackGround,
+            stillSearchingForLocation = stillSearchingForLocation,
+            weatherData = weatherData,
+            goToCamera = { this@WeatherFragment.goToCameraFragment() },
+            goToGallery = { this@WeatherFragment.gotoGalleryFragment() },
+            saveImageInDatabase = viewModel::saveWeatherImageInDatabase,
+            shareImage = { shareImage() },
+            reloadWeatherData = viewModel::fetchWeatherData
+        )
     }
 
 

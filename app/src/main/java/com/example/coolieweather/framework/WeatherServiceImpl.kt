@@ -21,6 +21,9 @@ class WeatherServiceImpl @Inject constructor(
 ) : WeatherService {
 
     override suspend fun getWeatherDetailsForCoordinates(geoPoint: GeoPoint): Result<WeatherData> {
+        /*
+         * convert callback to suspend
+         */
         return suspendCoroutine {
             helper.getCurrentWeatherByGeoCoordinates(
                 geoPoint.latitude,

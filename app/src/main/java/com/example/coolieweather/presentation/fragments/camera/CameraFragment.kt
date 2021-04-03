@@ -14,14 +14,13 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
 import com.example.coolieweather.presentation.fragments.weatherscreen.WeatherViewModel
 import com.example.coolieweather.presentation.utils.createImageFile
 import com.example.coolieweather.presentation.utils.hasCameraPermissions
-import com.example.coolieweather.presentation.utils.registerForCameraResult
+import com.example.coolieweather.presentation.utils.registerForCameraPermissionsResult
 import com.example.coolieweather.presentation.utils.requestCamera
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -37,7 +36,6 @@ class CameraFragment : Fragment() {
 
     private lateinit var cameraExecutor: ExecutorService
 
-    private val viewModel: CameraViewModel by viewModels()
     private val weatherViewModel: WeatherViewModel by activityViewModels()
 
     private lateinit var viewFinder: PreviewView
@@ -58,7 +56,7 @@ class CameraFragment : Fragment() {
         if (requireActivity().hasCameraPermissions()) {
             startCamera()
         } else {
-            registerForCameraResult { granted: Boolean ->
+            registerForCameraPermissionsResult { granted: Boolean ->
                 if (granted) startCamera()
                 else {
                     Toast.makeText(
@@ -67,7 +65,7 @@ class CameraFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                     lifecycleScope.launch {
-                        delay(1000)
+                            delay(1000)
                         findNavController().navigateUp()
 
                     }

@@ -31,7 +31,7 @@ fun requestCamera() {
     permissionLauncher?.launch(android.Manifest.permission.CAMERA)
 
 }
-fun Fragment.registerForCameraResult(onCameraResult: (Boolean) -> Unit) {
+fun Fragment.registerForCameraPermissionsResult(onCameraResult: (Boolean) -> Unit) {
     Timber.d("registering for location permission")
     permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         onCameraResult(it)

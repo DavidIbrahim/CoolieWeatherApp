@@ -1,7 +1,10 @@
 package dependencies
 
 object Versions {
-  const  val lottie: String = "3.6.1"
+    const val googlePlayServices: String = "18.0.0"
+    const val androidx_lifeCycle: String ="2.3.1"
+    const val openWeatherMapVersion: String ="2.1.0"
+    const  val lottie: String = "3.6.1"
     const val lottie_compose: String ="1.0.0-alpha07-SNAPSHOT"
 
     const val work_manager: String ="2.5.0"
@@ -11,7 +14,7 @@ object Versions {
     const val minsdk = 26
     const val targetsdk = 30
     const val kotlin = "1.4.31"
-    const val ktx = "1.3.2"
+    const val core_ktx = "1.3.2"
     const val dagger_hilt = "2.33-beta"
     const val   androidx_hilt = "1.0.0-alpha03"
     const val nav_components = "2.3.3"
@@ -37,6 +40,7 @@ object Versions {
     const val coroutines_version = "1.3.6"
     const val coroutines_play_services = "1.3.2"
     const val lifecycle_version = "2.2.0-alpha03"
+    const val lifecycle_viewModel = "2.2.0-alpha03"
     const val retrofit2_version = "2.8.1"
     const val markdown_processor = "0.1.3"
     const val junit_jupiter_version = "5.6.0"

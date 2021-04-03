@@ -68,11 +68,7 @@ fun WeatherImage(
     Timber.d(weatherData.toString())
     Box(modifier) {
         val imageState: UIState<Bitmap> = loadPicture(url = picURL)
-
-
-
         when (imageState) {
-            //todo change error view
             is Loading -> LoadingImage(Modifier.matchParentSize(), true)
             is Success -> {
                 SaveImageAndShow(
@@ -135,13 +131,18 @@ fun writeWeatherDataOnImage(bitmap: Bitmap, weatherData: WeatherData, context: C
     val newBitmap = bitmap.copy(bitmap.config, true);
     val canvas = Canvas(newBitmap)
     val canvasHeight = canvas.height
-    val canvasWidth = canvas.width
     val temperatureYPos = canvasHeight / 7
-    val placeNameYPos = (canvasHeight / 1.2).toInt()
-    val placeNameXPos = canvasWidth
+    val placeNameYPos = (canvasHeight / 1.1).toInt()
+    val placeNameXPos = 0
     val temperatureXPos = 0
     val padding = 30
     val temperatureTextSize = 120
+    val weatherDescriptionTextSize = 40
+    val weatherDescriptionYPos =temperatureYPos+temperatureTextSize * 2
+    val windSpeedYPos =weatherDescriptionYPos+150
+    val windSpeedTextSize= 35
+    val humidityYPos = windSpeedYPos+150
+    val humidityTextSize = 35
     writeDataOnImage(
         canvas,
         weatherData.temp.toString() + "\u2103",
@@ -154,17 +155,36 @@ fun writeWeatherDataOnImage(bitmap: Bitmap, weatherData: WeatherData, context: C
         canvas,
         weatherData.weatherDescription,
         context,
-        40,
+        weatherDescriptionTextSize,
         boldTextStyle = true,
         temperatureXPos, temperatureYPos + temperatureTextSize * 2, padding
     )
+
+    writeDataOnImage(
+        canvas,
+        context.getString(R.string.wind_speed_value,weatherData.windSpeed),
+        context,
+        windSpeedTextSize,
+        boldTextStyle = false,
+        temperatureXPos,  windSpeedYPos, padding, Align.LEFT
+    )
+
+    writeDataOnImage(
+        canvas,
+        context.getString(R.string.humidity_value,weatherData.humidity.toInt()),
+        context,
+        humidityTextSize,
+        boldTextStyle = false,
+        temperatureXPos, humidityYPos, padding, Align.LEFT
+    )
+
     writeDataOnImage(
         canvas,
         (context.getCityName(weatherData.geoPoint) as Result.Success).data,
         context,
         50,
         boldTextStyle = true,
-        placeNameXPos, placeNameYPos, -padding, Align.RIGHT
+        placeNameXPos, placeNameYPos, padding, Align.LEFT
     )
     return newBitmap
 }
@@ -200,16 +220,6 @@ fun writeDataOnImage(
     paint.textSize = convertToPixels(context, textSize).toFloat()
     paint.isAntiAlias = true;
 
-/*
-
-    val xPos = canvas.width / 2 - 2 //-2 is for regulating the x position offset
-
-
-    //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
-
-    //"- ((paint.descent() + paint.ascent()) / 2)" is the distance from the baseline to the center.
-    val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 3).toInt()
-*/
 
     canvas.drawText(
         text,

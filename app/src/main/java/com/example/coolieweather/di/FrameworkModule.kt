@@ -23,7 +23,7 @@ object FrameworkModule {
     fun provideOpenWeatherMapHelper(
         @ApplicationContext appContext: Context
     ): OpenWeatherMapHelper {
-        //todo add encryption for API KEY for security
+
         val helper = OpenWeatherMapHelper(appContext.getString(R.string.api_key))
         //todo use Locale.getDefault().language when support multiple languages
         helper.setLanguage(Languages.ENGLISH)
@@ -37,7 +37,7 @@ object FrameworkModule {
     fun provideIMagesDataBase(
         @ApplicationContext app: Context
     ): ImagesDataBase {
-        return Room.databaseBuilder(app, ImagesDataBase::class.java, "offline_messages")
+        return Room.databaseBuilder(app, ImagesDataBase::class.java, "weather_images")
             .build()
     }
 

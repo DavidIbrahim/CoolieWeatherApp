@@ -1,4 +1,4 @@
-package dependencies.dependencies
+package dependencies
 
 import dependencies.Versions
 

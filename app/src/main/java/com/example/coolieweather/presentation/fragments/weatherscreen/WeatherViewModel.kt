@@ -62,7 +62,7 @@ class WeatherViewModel @Inject constructor(
 
     fun saveWeatherImageInDatabase(uri: Uri) {
         currentWeatherImageUri = uri
-        //saving in database should be refactord to be a work request outside the app scope
+        //saving in database should be refactored to be a work request outside the app scope
         //to make sure it's saved
         GlobalScope.launch(Dispatchers.IO) {
             imagesDataCacheService.saveImage(uri)

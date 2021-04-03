@@ -146,7 +146,7 @@ private fun PreviewImage(it: Uri) {
 @Composable
 fun PhotoGrid(imagesUri: List<Uri>, onImageClick: (Uri) -> Unit) {
     LazyVerticalGrid(
-        cells = GridCells.Adaptive(minSize = 70.dp), contentPadding = PaddingValues(1.dp)
+        cells = GridCells.Adaptive(minSize = 70.dp), contentPadding = PaddingValues(10.dp)
     ) {
         items(imagesUri) { imageUri ->
             PhotoItem(imageUri, onImageClick)
@@ -163,7 +163,7 @@ fun PhotoItem(uri: Uri, onImageClick: (Uri) -> Unit) {
             val options = RequestOptions()
             options.fitCenter()
             //load only a thumbnail
-            options.override(350)
+            options.override(400)
             apply(options)
         },
         loading = { LoadingImage(Modifier.fillMaxSize()) }

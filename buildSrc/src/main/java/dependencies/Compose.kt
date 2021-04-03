@@ -4,7 +4,7 @@ object Compose {
 
     const val version = "1.0.0-beta03"
     private const val constraint_layout_version = "1.0.0-alpha03"
-    private const val compose_activity_version = "1.3.0-alpha04"
+    private const val compose_activity_version = "1.3.0-alpha05"
     private const val compose_viewModel_version = "1.0.0-alpha02"
 
     const val compose_ui = "androidx.compose.ui:ui:${version}"

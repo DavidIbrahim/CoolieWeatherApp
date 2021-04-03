@@ -8,6 +8,5 @@ object Build {
     const val nav_safe_args_plugin =
         "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.nav_components}"
     const val dagger_hilt_plugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.dagger_hilt}"
-    //  const val junit5 = "de.mannodermaus.gradle.plugins:android-junit5:1.3.2.0"
-    // const val fabric = "io.fabric.tools:gradle:${Versions.fabric_version}"
+
 }

@@ -34,13 +34,13 @@ import kotlinx.coroutines.delay
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             lifecycleScope.launchWhenStarted {
+                //should be loading app data here instead of delay
                 delay(4000)
                 goToNextScreen()
             }

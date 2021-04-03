@@ -12,7 +12,6 @@ buildscript {
         classpath Build.nav_safe_args_plugin
         classpath Build.dagger_hilt_plugin
         classpath Build.build_tools
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30'
     }
 }
 allprojects {

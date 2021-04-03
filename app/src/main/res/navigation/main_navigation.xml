@@ -33,8 +33,7 @@
     <fragment
         android:id="@+id/galleryFragment"
         android:name="com.example.coolieweather.presentation.fragments.gallery.GalleryFragment"
-        android:label="gallery_fragment"
-        tools:layout="@layout/gallery_fragment" />
+        android:label="gallery_fragment" />
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.coolieweather.presentation.fragments.splash.SplashFragment"

@@ -14,13 +14,5 @@ class FrameworkToDomainTransformer @Inject constructor() {
       currentWeather.main.humidity,
           GeoPoint(currentWeather.coord.lat,currentWeather.coord.lon)
       )
-
-        /*
-          Log.v(TAG, "Coordinates: " + currentWeather.getCoord().getLat() + ", "+currentWeather.getCoord().getLon() +"\n"
-                  +"Weather Description: " + currentWeather.getWeather().get(0).getDescription() + "\n"
-                  +"Temperature: " + currentWeather.getMain().getTempMax()+"\n"
-                  +"Wind Speed: " + currentWeather.getWind().getSpeed() + "\n"
-                  +"City, Country: " + currentWeather.getName() + ", " + currentWeather.getSys().getCountry()
-          );*/
     }
 }

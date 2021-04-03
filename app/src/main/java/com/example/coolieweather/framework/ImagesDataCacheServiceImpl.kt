@@ -17,11 +17,6 @@ class ImagesDataCacheServiceImpl @Inject constructor(private val imagesDao: Imag
         imagesDao.insert(ImageEntity(imagePath = imageUri.path!!,savedTime = Instant.now().toEpochMilli()))
     }
 
-    override suspend fun getLastImage(): Uri?{
-        val lastImage: ImageEntity = imagesDao.getLastImage() ?: return null
-        return Uri.parse(lastImage.imagePath)
-    }
-
     override suspend fun getAllImages(): List<Uri> {
         return imagesDao.getAllImages().map { Uri.parse(it.imagePath)
         }
