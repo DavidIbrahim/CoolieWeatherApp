@@ -1,7 +1,7 @@
 package com.example.coolieweather.presentation.fragments.weatherscreen
 
-import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -13,8 +13,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.coolieweather.R
 import com.example.coolieweather.buisness.models.GeoPoint
@@ -24,6 +26,8 @@ import com.example.coolieweather.presentation.CoolieWeatherTheme
 import com.example.coolieweather.presentation.utils.*
 import com.google.android.gms.location.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -55,16 +59,20 @@ class WeatherFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (!requireContext().hasLocationPermissions())
+        if (!requireContext().hasLocationPermissions()) {
             handleRequestingLocation()
+        }
     }
 
     private fun handleRequestingLocation() {
-        if (requireActivity().shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            //todo explain to the user why we need location permission then
+        lifecycleScope.launch {
+            //to allow user to read that we needs his location before requesting permission
+            delay(3000)
+
+            Timber.d("requesting location")
+            requestLocationPermission()
         }
-        Timber.d("requesting location")
-        requestLocation()
+
 
     }
 
@@ -131,6 +139,7 @@ class WeatherFragment : Fragment() {
     private fun gotoGalleryFragment() {
         findNavController().navigate(WeatherFragmentDirections.actionWeatherFragmentToGalleryFragment())
     }
+
 
     fun shareImage() {
         viewModel.currentWeatherImageUri.let {

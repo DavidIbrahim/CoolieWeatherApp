@@ -61,7 +61,7 @@ fun WeatherScreen(
                     Divider()
                     BottomSheetOptionRow(
                         R.drawable.ic_share,
-                        stringResource(id = R.string.open_saved_images),
+                        stringResource(id = R.string.share_image),
                         shareImage
                     )
 
@@ -104,7 +104,8 @@ fun BottomSheetOptionRow(iconResourceID: Int, text: String, onClick: () -> Unit)
             painter = painterResource(id = iconResourceID),
             contentDescription = "", Modifier.size(40.dp)
         )
-        Text(text = text, Modifier.padding(start = 16.dp))
+        Text(text = text, Modifier.padding(start = 16.dp),
+        style = MaterialTheme.typography.body1,color = gray500)
     }
 }
 
@@ -151,7 +152,7 @@ private fun WeatherContent(
 @Composable
 fun SearchingLocationScreen(modifier: Modifier) {
     Column(modifier, Arrangement.Center, Alignment.CenterHorizontally) {
-        LAnimation(rawResourceID = R.raw.location_searching, Modifier.requiredSize(300.dp))
+        LAnimation(rawResourceID = R.raw.location_searching, Modifier.requiredSize(300.dp),Int.MAX_VALUE)
         Text(
             text = stringResource(id = R.string.searching_location_msg),
             style = MaterialTheme.typography.h6,
@@ -196,8 +197,10 @@ fun NoBackgroundScreen(modifier: Modifier) {
         LAnimation(R.raw.insta_camera, Modifier.requiredSize(150.dp), Int.MAX_VALUE)
         Text(
             text = stringResource(id = R.string.add_image),
-            Modifier.padding(vertical = 20.dp),
-            textAlign = TextAlign.Center
-        )
+            modifier=Modifier.padding(vertical = 20.dp),
+            textAlign = TextAlign.Center,
+            style =MaterialTheme.typography.h6
+
+            )
     }
 }

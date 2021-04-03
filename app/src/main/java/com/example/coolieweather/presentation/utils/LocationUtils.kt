@@ -30,7 +30,7 @@ fun Fragment.registerForLocationResult(onLocationResult: (Boolean) -> Unit) {
     }
 }
 
-fun requestLocation() {
+fun requestLocationPermission() {
 
     Timber.d("permission launcher is null ${permissionLauncher == null}")
     permissionLauncher?.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)

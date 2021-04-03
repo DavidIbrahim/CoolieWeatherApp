@@ -11,6 +11,7 @@ import com.example.coolieweather.buisness.models.GeoPoint
 import com.example.coolieweather.buisness.models.Result
 import com.example.coolieweather.buisness.models.WeatherData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,6 +25,9 @@ class WeatherViewModel @Inject constructor(
 ) :
     ViewModel() {
 
+    /**
+     * watching location permission changes
+     */
     val grantedLocationPermission: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
@@ -57,7 +61,7 @@ class WeatherViewModel @Inject constructor(
 
     fun saveWeatherImageInDatabase(uri: Uri) {
         currentWeatherImageUri = uri
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             imagesDataCacheService.saveImage(uri)
         }
     }

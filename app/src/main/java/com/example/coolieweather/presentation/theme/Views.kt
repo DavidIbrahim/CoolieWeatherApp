@@ -8,9 +8,11 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -52,7 +54,7 @@ fun LAnimation(rawResourceID: Int, modifier: Modifier = Modifier, repeatCount: I
 fun WeatherImage(
     picURL: String,
     weatherData: WeatherData,
-    saveImageInDatabase:(Uri)->Unit,
+    saveImageInDatabase: (Uri) -> Unit,
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.FillBounds,
@@ -65,20 +67,24 @@ fun WeatherImage(
         val imageState: UIState<Bitmap> = loadPicture(url = picURL)
 
 
+
         when (imageState) {
             //todo change error view
-            Loading -> LoadingImage(Modifier.matchParentSize(),true)
+            is Loading -> LoadingImage(Modifier.matchParentSize(), true)
             is Success -> {
-                val displayedImage = imageState.data.let {
-                    val weatherImage =
-                        writeWeatherDataOnImage(it, weatherData, LocalContext.current)
-                    val uri = LocalContext.current.writeBitmapToFile(weatherImage)
+                val context = LocalContext.current
+                var displayedImage: Bitmap? = rememberSaveable(picURL) {
+                    val weatherImage: Bitmap =
+                        writeWeatherDataOnImage(imageState.data, weatherData, context)
+                    val uri = context.writeContentToShareableFile(weatherImage)
                     saveImageInDatabase(uri)
                     weatherImage
-
                 }
-                androidx.compose.foundation.Image(
-                    bitmap = displayedImage.asImageBitmap(),
+                LoadingImage(Modifier.matchParentSize(), true)
+                Timber.d("creating displayed image")
+
+                Image(
+                    bitmap = displayedImage!!.asImageBitmap(),
                     contentDescription = null,
                     modifier,
                     alignment,
@@ -188,9 +194,9 @@ fun convertToPixels(context: Context, nDP: Int): Int {
 }
 
 @Composable
-fun LoadingImage(modifier: Modifier = Modifier,animated:Boolean = false) {
-    if(animated){
-        LAnimation(rawResourceID = R.raw.loading_animation,modifier, Int.MAX_VALUE)
+fun LoadingImage(modifier: Modifier = Modifier, animated: Boolean = false) {
+    if (animated) {
+        LAnimation(rawResourceID = R.raw.loading_animation, modifier, Int.MAX_VALUE)
     } else {
         Box(modifier) {
             CircularProgressIndicator(

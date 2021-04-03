@@ -2,9 +2,13 @@ package com.example.coolieweather.presentation.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import androidx.core.content.FileProvider.getUriForFile
+import androidx.core.net.toUri
+import com.example.coolieweather.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,13 +19,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-fun Context.writeBitmapToFile(bitmap: Bitmap): Uri {
+fun Context.writeContentToShareableFile(bitmap: Bitmap): Uri {
     val file = createImageFile()
     val fOut = FileOutputStream(file)
     GlobalScope.launch(Dispatchers.IO) {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut)
     }
-    return Uri.fromFile(file)
+
+    return file.toUri()
 
 }
 
@@ -37,4 +42,15 @@ fun Context.createImageFile(): File {
         storageDir /* directory */
     )
 }
-
+fun Context.shareFile(uri: Uri) {
+    val file =  File(uri.path)
+    val uriForShare = getUriForFile(
+        this,
+        BuildConfig.APPLICATION_ID + ".fileprovider", file
+    )
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    intent.putExtra(Intent.EXTRA_STREAM, uriForShare)
+    intent.type = "image/jpg"
+    startActivity(Intent.createChooser(intent, "Share image via"))
+}
